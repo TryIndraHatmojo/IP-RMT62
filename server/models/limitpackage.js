@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      LimitPackage.hasMany(models.Transaction, {
+        foreignKey: "LimitPackageId",
+      });
     }
   }
   LimitPackage.init(

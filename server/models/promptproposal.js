@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      PromptProposal.belongsTo(models.User, { foreignKey: "UserId" });
+      PromptProposal.hasMany(models.Proposal, {
+        foreignKey: "PromptProposalId",
+      });
     }
   }
   PromptProposal.init(
