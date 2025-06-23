@@ -16,6 +16,8 @@ module.exports = {
           key: "id",
         },
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       LimitPackageId: {
         allowNull: false,
@@ -24,6 +26,8 @@ module.exports = {
           key: "id",
         },
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       LimitPurchased: {
         allowNull: false,
