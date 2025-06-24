@@ -112,6 +112,19 @@ class ProposalController {
       throw err;
     }
   }
+
+  static async findAll(req, res, next) {
+    try {
+      const proposals = await Proposal.findAll({
+        include: [PromptProposal],
+        where: { UserId: req.user.id },
+        order: [["createdAt", "DESC"]],
+      });
+      res.status(200).json(proposals);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = ProposalController;
