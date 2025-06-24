@@ -155,6 +155,35 @@ class ProposalController {
       next(err);
     }
   }
+  static async update(req, res, next) {
+    try {
+      const { id } = req.params;
+      const proposal = await Proposal.findOne({
+        where: { id, UserId: req.user.id },
+        include: [PromptProposal],
+      });
+      if (!proposal) {
+        return res.status(404).json({ message: "Proposal not found" });
+      }
+      const promptProposal = await PromptProposal.findByPk(
+        proposal.PromptProposalId
+      );
+
+      let response = await ProposalController.createPrompt(req.body);
+      response = JSON.parse(response.replace("```json", "").replace("```", ""));
+
+      await promptProposal.update(req.body);
+
+      await proposal.update({
+        title: response.title,
+        aiOutput: response.output,
+      });
+
+      res.status(200).json(proposal);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = ProposalController;
