@@ -17,6 +17,7 @@ app.post("/login/google", LoginController.googleLogin);
 app.use(authentication);
 app.post("/proposals", ProposalController.create);
 app.get("/proposals", ProposalController.findAll);
+app.get("/proposals/:id", ProposalController.findOne);
 
 app.use(errorHandler);
 

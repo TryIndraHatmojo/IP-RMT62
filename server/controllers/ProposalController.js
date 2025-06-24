@@ -125,6 +125,22 @@ class ProposalController {
       next(err);
     }
   }
+
+  static async findOne(req, res, next) {
+    try {
+      const { id } = req.params;
+      const proposal = await Proposal.findOne({
+        where: { id, UserId: req.user.id },
+        include: [PromptProposal],
+      });
+      if (!proposal) {
+        return res.status(404).json({ message: "Proposal not found" });
+      }
+      res.status(200).json(proposal);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = ProposalController;
