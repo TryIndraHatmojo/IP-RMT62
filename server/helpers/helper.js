@@ -21,9 +21,17 @@ function verifyJwtToken(token) {
   return jwt.verify(token, JWT_SECRET);
 }
 
+function formatRupiah(money) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(money);
+}
+
 module.exports = {
   hashPassword,
   compareHashPassword,
   signJwtToken,
   verifyJwtToken,
+  formatRupiah,
 };
