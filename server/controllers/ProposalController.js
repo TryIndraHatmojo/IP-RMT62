@@ -141,6 +141,20 @@ class ProposalController {
       next(err);
     }
   }
+  static async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      const deleted = await Proposal.destroy({
+        where: { id, UserId: req.user.id },
+      });
+      if (!deleted) {
+        return res.status(404).json({ message: "Proposal not found" });
+      }
+      res.status(200).json({ message: "Proposal deleted successfully" });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = ProposalController;

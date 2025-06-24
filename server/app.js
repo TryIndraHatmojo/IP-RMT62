@@ -18,7 +18,7 @@ app.use(authentication);
 app.post("/proposals", ProposalController.create);
 app.get("/proposals", ProposalController.findAll);
 app.get("/proposals/:id", ProposalController.findOne);
-
+app.delete("/proposals/:id", ProposalController.delete);
 app.use(errorHandler);
 
 module.exports = app;
