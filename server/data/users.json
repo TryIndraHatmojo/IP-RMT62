@@ -1,0 +1,14 @@
+[
+  {
+    "name": "superadmin",
+    "email": "superadmin@mail.com",
+    "password": "p4ssw0rd#@!",
+    "role": "admin"
+  },
+  {
+    "name": "guest_user",
+    "email": "guest_user@mail.com",
+    "password": "p4ssword",
+    "role": "user"
+  }
+]
