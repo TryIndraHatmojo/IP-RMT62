@@ -27,6 +27,8 @@ app.post(
   TransactionController.generateMidtransToken
 );
 
+app.patch("/users", TransactionController.updateLimitPackage);
+
 app.use(errorHandler);
 
 module.exports = app;

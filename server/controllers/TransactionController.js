@@ -35,6 +35,41 @@ class TransactionController {
       next(error);
     }
   }
+  static async updateLimitPackage(req, res, next) {
+    try {
+      const user = req.user;
+      if (!req.body) {
+        return res.status(400).json({ message: "LimitPackageId is required" });
+      }
+      const { LimitPackageId } = req.body;
+
+      if (!LimitPackageId) {
+        return res.status(400).json({ message: "LimitPackageId is required" });
+      }
+
+      const limitPackage = await LimitPackage.findByPk(LimitPackageId);
+      if (!limitPackage) {
+        return res.status(404).json({ message: "Limit Package not found" });
+      }
+
+      user.limitUsage += limitPackage.limit;
+      await User.update(
+        {
+          limitUsage: user.limitUsage,
+        },
+        {
+          where: { id: user.id },
+        }
+      );
+
+      res.status(200).json({
+        message: "Limit updated successfully",
+        user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = TransactionController;
