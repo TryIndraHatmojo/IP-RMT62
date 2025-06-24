@@ -112,6 +112,78 @@ class ProposalController {
       throw err;
     }
   }
+
+  static async findAll(req, res, next) {
+    try {
+      const proposals = await Proposal.findAll({
+        include: [PromptProposal],
+        where: { UserId: req.user.id },
+        order: [["createdAt", "DESC"]],
+      });
+      res.status(200).json(proposals);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async findOne(req, res, next) {
+    try {
+      const { id } = req.params;
+      const proposal = await Proposal.findOne({
+        where: { id, UserId: req.user.id },
+        include: [PromptProposal],
+      });
+      if (!proposal) {
+        return res.status(404).json({ message: "Proposal not found" });
+      }
+      res.status(200).json(proposal);
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      const deleted = await Proposal.destroy({
+        where: { id, UserId: req.user.id },
+      });
+      if (!deleted) {
+        return res.status(404).json({ message: "Proposal not found" });
+      }
+      res.status(200).json({ message: "Proposal deleted successfully" });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async update(req, res, next) {
+    try {
+      const { id } = req.params;
+      const proposal = await Proposal.findOne({
+        where: { id, UserId: req.user.id },
+        include: [PromptProposal],
+      });
+      if (!proposal) {
+        return res.status(404).json({ message: "Proposal not found" });
+      }
+      const promptProposal = await PromptProposal.findByPk(
+        proposal.PromptProposalId
+      );
+
+      let response = await ProposalController.createPrompt(req.body);
+      response = JSON.parse(response.replace("```json", "").replace("```", ""));
+
+      await promptProposal.update(req.body);
+
+      await proposal.update({
+        title: response.title,
+        aiOutput: response.output,
+      });
+
+      res.status(200).json(proposal);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = ProposalController;
