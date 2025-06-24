@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Starter Package",
+    "description": "Cocok untuk pengguna baru yang ingin mencoba membuat proposal bisnis AI dengan cepat dan mudah.",
+    "limit": 10,
+    "price": 7500,
+    "isActive": true
+  },
+  {
+    "name": "Standard Package",
+    "description": "Untuk kamu yang mulai serius eksplorasi bisnis dan butuh lebih banyak variasi dan revisi proposal.",
+    "limit": 20,
+    "price": 15000,
+    "isActive": true
+  },
+  {
+    "name": "Pro Package",
+    "description": "Memberikan keleluasaan untuk revisi, personalisasi, dan download banyak versi proposal profesional.",
+    "limit": 50,
+    "price": 25000,
+    "isActive": true
+  },
+  {
+    "name": "Business Pack",
+    "description": "Kuota besar untuk kebutuhan proposal tim, kelas bisnis, pelatihan UMKM, atau platform mentoring",
+    "limit": 150,
+    "price": 99000,
+    "isActive": true
+  }
+]
