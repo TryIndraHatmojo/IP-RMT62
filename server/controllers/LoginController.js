@@ -6,6 +6,9 @@ const client = new OAuth2Client();
 class LoginController {
   static async googleLogin(req, res, next) {
     try {
+      if (!req.body.token) {
+        throw { name: "ValidationError", message: "Google token is required" };
+      }
       const ticket = await client.verifyIdToken({
         idToken: req.body.token,
         audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
@@ -30,6 +33,10 @@ class LoginController {
       });
       res.status(200).json({ access_token: accessToken });
     } catch (error) {
+      if (error.message && error.message.toLowerCase().includes("token")) {
+        error.name = error.name || "AuthenticationError";
+        error.message = error.message || "Invalid Google token";
+      }
       next(error);
     }
   }

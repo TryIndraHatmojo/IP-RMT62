@@ -1,9 +1,9 @@
 [
   {
-    "name": "superadmin",
-    "email": "superadmin@mail.com",
+    "name": "indra",
+    "email": "indratugas999@gmail.com",
     "password": "p4ssw0rd#@!",
-    "role": "admin"
+    "role": "user"
   },
   {
     "name": "guest_user",
