@@ -6,9 +6,15 @@ class TransactionController {
     try {
       const { LimitPackageId } = req.params;
       const limitPackage = await LimitPackage.findByPk(LimitPackageId);
+      if (!limitPackage) {
+        throw {
+          status: 404,
+          name: "ErrorDataNotFound",
+          message: "Limit Package not found",
+        };
+      }
       const user = req.user;
       let snap = new midtransClient.Snap({
-        // Set to true if you want Production Environment (accept real transaction).
         isProduction: false,
         serverKey: process.env.MIDTRANS_SERVER_KEY,
       });
@@ -39,17 +45,21 @@ class TransactionController {
     try {
       const user = req.user;
       if (!req.body) {
-        return res.status(400).json({ message: "LimitPackageId is required" });
+        throw {
+          status: 400,
+          name: "ValidationError",
+          message: "LimitPackageId is required",
+        };
       }
       const { LimitPackageId } = req.body;
 
-      if (!LimitPackageId) {
-        return res.status(400).json({ message: "LimitPackageId is required" });
-      }
-
       const limitPackage = await LimitPackage.findByPk(LimitPackageId);
       if (!limitPackage) {
-        return res.status(404).json({ message: "Limit Package not found" });
+        throw {
+          status: 404,
+          name: "ErrorDataNotFound",
+          message: "Limit Package not found",
+        };
       }
 
       user.limitUsage += limitPackage.limit;

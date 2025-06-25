@@ -14,7 +14,6 @@ class LoginController {
         audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
       });
       const payload = ticket.getPayload();
-      console.log("🚀 ~ LoginController ~ googleLogin ~ payload:", payload);
 
       const { email, name } = payload;
       let user = await User.findOne({ where: { email } });
@@ -33,10 +32,6 @@ class LoginController {
       });
       res.status(200).json({ access_token: accessToken });
     } catch (error) {
-      if (error.message && error.message.toLowerCase().includes("token")) {
-        error.name = error.name || "AuthenticationError";
-        error.message = error.message || "Invalid Google token";
-      }
       next(error);
     }
   }

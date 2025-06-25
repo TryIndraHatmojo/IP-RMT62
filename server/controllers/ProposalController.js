@@ -55,6 +55,13 @@ class ProposalController {
 
   static async createPrompt(dataInput) {
     try {
+      if (!dataInput.businessInterestField) {
+        throw {
+          name: "ValidationError",
+          message: "Bidang minat usaha tidak boleh kosong",
+          status: 400,
+        };
+      }
       dataInput.longTermVision =
         dataInput.longTermVision &&
         ", visi jangka panjang usaha ini adalah " + dataInput.longTermVision;
@@ -114,16 +121,12 @@ class ProposalController {
   }
 
   static async findAll(req, res, next) {
-    try {
-      const proposals = await Proposal.findAll({
-        include: [PromptProposal],
-        where: { UserId: req.user.id },
-        order: [["createdAt", "DESC"]],
-      });
-      res.status(200).json(proposals);
-    } catch (err) {
-      next(err);
-    }
+    const proposals = await Proposal.findAll({
+      include: [PromptProposal],
+      where: { UserId: req.user.id },
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(proposals);
   }
 
   static async findOne(req, res, next) {
@@ -134,7 +137,11 @@ class ProposalController {
         include: [PromptProposal],
       });
       if (!proposal) {
-        return res.status(404).json({ message: "Proposal not found" });
+        throw {
+          name: "ErrorDataNotFound",
+          message: "Proposal not found",
+          status: 404,
+        };
       }
       res.status(200).json(proposal);
     } catch (err) {
@@ -148,7 +155,11 @@ class ProposalController {
         where: { id, UserId: req.user.id },
       });
       if (!deleted) {
-        return res.status(404).json({ message: "Proposal not found" });
+        throw {
+          name: "ErrorDataNotFound",
+          message: "Proposal not found",
+          status: 404,
+        };
       }
       res.status(200).json({ message: "Proposal deleted successfully" });
     } catch (err) {
@@ -163,7 +174,11 @@ class ProposalController {
         include: [PromptProposal],
       });
       if (!proposal) {
-        return res.status(404).json({ message: "Proposal not found" });
+        throw {
+          name: "ErrorDataNotFound",
+          message: "Proposal not found",
+          status: 404,
+        };
       }
       const promptProposal = await PromptProposal.findByPk(
         proposal.PromptProposalId

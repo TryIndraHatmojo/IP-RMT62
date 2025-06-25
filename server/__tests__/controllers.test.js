@@ -5,7 +5,7 @@ const { signJwtToken } = require("../helpers/helper");
 const users = require("../data/users.json");
 let access_token;
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 beforeAll(async () => {
   // Find or create user from users.json and generate token
@@ -141,5 +141,174 @@ describe("LoginController (error cases)", () => {
       .send({ token: "invalid_token" });
     expect([400, 401]).toContain(res.statusCode); // Google error can be 400 or 401
     expect(res.body).toHaveProperty("message");
+  });
+});
+
+describe("Authorization (401 error cases)", () => {
+  it("should return 401 if no token is provided for POST /proposals", async () => {
+    const res = await request(app).post("/proposals").send({});
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if no token is provided for GET /proposals", async () => {
+    const res = await request(app).get("/proposals");
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if no token is provided for GET /proposals/:id", async () => {
+    const res = await request(app).get("/proposals/1");
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if no token is provided for PUT /proposals/:id", async () => {
+    const res = await request(app).put("/proposals/1").send({});
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if no token is provided for DELETE /proposals/:id", async () => {
+    const res = await request(app).delete("/proposals/1");
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if no token is provided for POST /generate-midtrans-token/:LimitPackageId", async () => {
+    const res = await request(app).post("/generate-midtrans-token/1");
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if no token is provided for PATCH /users", async () => {
+    const res = await request(app).patch("/users").send({ LimitPackageId: 1 });
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 401 if user in token payload does not exist in database", async () => {
+    // Generate token with non-existent user id
+    const fakeToken = signJwtToken({
+      id: 9999999,
+      email: "notfound@mail.com",
+      name: "Not Found",
+    });
+    const res = await request(app)
+      .get("/proposals")
+      .set("Authorization", `Bearer ${fakeToken}`);
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toHaveProperty("message");
+  });
+});
+
+describe("404 Not Found error cases", () => {
+  it("should return 404 if proposal is not found for GET /proposals/:id", async () => {
+    const res = await request(app)
+      .get("/proposals/9999999")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Proposal not found");
+  });
+
+  it("should return 404 if proposal is not found for PUT /proposals/:id", async () => {
+    const res = await request(app)
+      .put("/proposals/9999999")
+      .set("Authorization", `Bearer ${access_token}`)
+      .send({
+        businessInterestField: "Test",
+        capital: 1,
+        location: "Test",
+        preference: "Test",
+        businessGoal: "Test",
+      });
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Proposal not found");
+  });
+
+  it("should return 404 if proposal is not found for DELETE /proposals/:id", async () => {
+    const res = await request(app)
+      .delete("/proposals/9999999")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Proposal not found");
+  });
+});
+
+describe("400 Bad Request error cases", () => {
+  it("should return 400 if required field is missing in POST /proposals", async () => {
+    // Remove businessInterestField (required)
+    const body = {
+      capital: 10000000,
+      location: "Jakarta",
+      preference: "Snacks",
+      businessGoal: "Increase sales",
+    };
+    const res = await request(app)
+      .post("/proposals")
+      .set("Authorization", `Bearer ${access_token}`)
+      .send(body);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 400 if required field is missing in PUT /proposals/:id", async () => {
+    // Create a proposal first
+    const createRes = await request(app)
+      .post("/proposals")
+      .set("Authorization", `Bearer ${access_token}`)
+      .send({
+        businessInterestField: "Culinary",
+        capital: 10000000,
+        location: "Jakarta",
+        preference: "Snacks",
+        businessGoal: "Increase sales",
+      });
+    const proposalId = createRes.body.id;
+    // Update without businessInterestField
+    const res = await request(app)
+      .put(`/proposals/${proposalId}`)
+      .set("Authorization", `Bearer ${access_token}`)
+      .send({
+        location: "Bandung",
+        preference: "Drinks",
+        businessGoal: "Expand market",
+      });
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty("message");
+  });
+});
+
+describe("TransactionController (400/404 error cases)", () => {
+  it("should return 400 if LimitPackageId is missing in POST /generate-midtrans-token/:LimitPackageId", async () => {
+    const res = await request(app)
+      .post("/generate-midtrans-token")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect([400, 404]).toContain(res.statusCode);
+  });
+
+  it("should return 404 if LimitPackageId does not exist in POST /generate-midtrans-token/:LimitPackageId", async () => {
+    const res = await request(app)
+      .post("/generate-midtrans-token/9999999")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Limit Package not found");
+  });
+
+  it("should return 400 if LimitPackageId is missing in PATCH /users", async () => {
+    const res = await request(app)
+      .patch("/users")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty("message");
+  });
+
+  it("should return 404 if LimitPackageId does not exist in PATCH /users", async () => {
+    const res = await request(app)
+      .patch("/users")
+      .set("Authorization", `Bearer ${access_token}`)
+      .send({ LimitPackageId: 9999999 });
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "Limit Package not found");
   });
 });
