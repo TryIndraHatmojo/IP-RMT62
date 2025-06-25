@@ -5,24 +5,29 @@ import LandingPage from "./pages/LandingPage";
 import LoginLayout from "./layouts/LoginLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
+import DashboardPage from "./pages/DashboardPage";
+import { Provider } from "react-redux";
+import { store } from "./store/index";
 
 function App() {
   return (
     <>
       <ToastContainer />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<LandingPage />} />
-          </Route>
-          <Route element={<LoginLayout />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
-          <Route element={<AuthLayout />}>
-            <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<LandingPage />} />
+            </Route>
+            <Route element={<LoginLayout />}>
+              <Route path="/login" element={<Login />} />
+            </Route>
+            <Route element={<AuthLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </Provider>
     </>
   );
 }
