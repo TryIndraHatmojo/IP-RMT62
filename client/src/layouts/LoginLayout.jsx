@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router";
 import Navbar from "../components/Navbar";
 import { getToken } from "../helpers/helpers";
+import Footer from "../components/Footer";
 
 export default function LoginLayout() {
   const token = getToken();
@@ -11,6 +12,7 @@ export default function LoginLayout() {
     <>
       <Navbar isLogin={false} />
       <Outlet />
+      <Footer />
     </>
   );
 }
