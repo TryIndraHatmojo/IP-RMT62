@@ -28,6 +28,7 @@ app.post(
 );
 
 app.patch("/users", TransactionController.updateLimitPackage);
+app.get("/users/:id", LoginController.getUserById);
 
 app.use(errorHandler);
 
