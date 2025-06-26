@@ -80,6 +80,10 @@ class TransactionController {
       next(error);
     }
   }
+  static async getLimitPackages(req, res, next) {
+    const limitPackages = await LimitPackage.findAll();
+    res.status(200).json(limitPackages);
+  }
 }
 
 module.exports = TransactionController;

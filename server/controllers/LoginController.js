@@ -35,6 +35,24 @@ class LoginController {
       next(error);
     }
   }
+  static async getUserById(req, res, next) {
+    try {
+      const userId = req.params.id;
+      const user = await User.findByPk(userId, {
+        attributes: { exclude: ["password"] },
+      });
+      if (!user) {
+        throw {
+          status: 404,
+          name: "ErrorDataNotFound",
+          message: "User not found",
+        };
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = LoginController;
