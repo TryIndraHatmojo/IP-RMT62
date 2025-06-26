@@ -1,0 +1,14 @@
+[
+  {
+    "name": "indra",
+    "email": "indratugas999@gmail.com",
+    "password": "p4ssw0rd#@!",
+    "role": "user"
+  },
+  {
+    "name": "guest_user",
+    "email": "guest_user@mail.com",
+    "password": "p4ssword",
+    "role": "user"
+  }
+]
