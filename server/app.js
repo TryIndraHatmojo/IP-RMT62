@@ -30,6 +30,8 @@ app.post(
 app.patch("/users", TransactionController.updateLimitPackage);
 app.get("/users/:id", LoginController.getUserById);
 
+app.get("/packages", TransactionController.getLimitPackages);
+
 app.use(errorHandler);
 
 module.exports = app;
