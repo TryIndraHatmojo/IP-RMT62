@@ -1,8 +1,20 @@
 import { Link } from "react-router";
 import image from "../assets/image/card-bg.png";
 import Markdown from "../components/Markdown";
+import { apiModalNekat, getBearerToken } from "../helpers/helpers";
+import { useDispatch } from "react-redux";
+import { fetchProposals } from "../store/proposalsSlice";
 
 export default function CardLandingPage({ sellPoint, proposal }) {
+  const dispatch = useDispatch();
+  const handleDeleteProposal = async () => {
+    await apiModalNekat.delete("/proposals/" + proposal.id, {
+      headers: {
+        Authorization: getBearerToken(),
+      },
+    });
+    dispatch(fetchProposals());
+  };
   return (
     <div className="card bg-base-100 image-full w-96 shadow-sm card-xl">
       <figure>
@@ -24,12 +36,13 @@ export default function CardLandingPage({ sellPoint, proposal }) {
               >
                 View
               </Link>
-              <Link
+              <button
+                onClick={handleDeleteProposal}
                 className="btn btn-error btn-soft w-36"
                 to={`/proposal/${proposal.id}/edit`}
               >
                 Delete
-              </Link>
+              </button>
             </div>
             <Link
               className="btn btn-secondary btn-soft"

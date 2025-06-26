@@ -98,7 +98,7 @@ export default function ProposalUpdatePage() {
   };
 
   return (
-    <div className="flex w-full" style={{ minHeight: "100vh" }}>
+    <div className="flex w-full bg-base-200" style={{ minHeight: "100vh" }}>
       <div className="card  rounded-box grid  grow p-4 mb-3 w-100">
         <Markdown markdownText={proposal.aiOutput}></Markdown>
       </div>

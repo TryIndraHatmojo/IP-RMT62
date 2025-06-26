@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { apiModalNekat, getBearerToken } from "../helpers/helpers";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 export default function ProposalCreatePage() {
   const [businessInterestField, setBusinessInterestField] = useState("");
@@ -14,6 +15,8 @@ export default function ProposalCreatePage() {
   const [mainCompetitors, setMainCompetitors] = useState("");
   const [marketingPlan, setMarketingPlan] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,6 +44,7 @@ export default function ProposalCreatePage() {
         },
       });
       toast.dismiss();
+      navigate("/proposal/" + data.id);
       // Reset form jika perlu
     } catch (err) {
       toast.error(err.response?.data?.message || "Gagal membuat proposal");
