@@ -233,6 +233,14 @@ describe("404 Not Found error cases", () => {
     expect(res.statusCode).toBe(404);
     expect(res.body).toHaveProperty("message", "Proposal not found");
   });
+
+  it("should return 404 if user is not found for GET /users/:id", async () => {
+    const res = await request(app)
+      .get("/users/9999999")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "User not found");
+  });
 });
 
 describe("400 Bad Request error cases", () => {
@@ -310,5 +318,43 @@ describe("TransactionController (400/404 error cases)", () => {
       .send({ LimitPackageId: 9999999 });
     expect(res.statusCode).toBe(404);
     expect(res.body).toHaveProperty("message", "Limit Package not found");
+  });
+});
+
+describe("GET /users/:id", () => {
+  let userId;
+  beforeAll(async () => {
+    // Ambil user id dari users.json
+    const user = await User.findOne({ where: { email: users[0].email } });
+    userId = user.id;
+  });
+  it("should return user data (200)", async () => {
+    const res = await request(app)
+      .get(`/users/${userId}`)
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("id", userId);
+    expect(res.body).not.toHaveProperty("password");
+  });
+  it("should return 404 if user not found", async () => {
+    const res = await request(app)
+      .get("/users/9999999")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty("message", "User not found");
+  });
+});
+
+describe("GET /packages", () => {
+  it("should return all limit packages (200)", async () => {
+    const res = await request(app)
+      .get("/packages")
+      .set("Authorization", `Bearer ${access_token}`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    if (res.body.length > 0) {
+      expect(res.body[0]).toHaveProperty("name");
+      expect(res.body[0]).toHaveProperty("price");
+    }
   });
 });
