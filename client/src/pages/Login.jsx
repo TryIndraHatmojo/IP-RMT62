@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { apiModalNekat } from "../helpers/helpers";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 export default function Login() {
+  const navigate = useNavigate();
   useEffect(() => {
     async function handleCredentialResponse(response) {
       console.log("Encoded JWT ID token: " + response.credential);
@@ -14,6 +16,9 @@ export default function Login() {
         position: "top-center",
         theme: "colored",
       });
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
     }
     google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID,

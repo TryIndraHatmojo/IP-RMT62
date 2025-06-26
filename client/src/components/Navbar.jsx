@@ -1,6 +1,11 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function Navbar({ isLogin }) {
+  let navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/login");
+  };
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -55,7 +60,11 @@ export default function Navbar({ isLogin }) {
         )}
       </div>
       <div className="navbar-end">
-        {isLogin && <button className="btn btn-info">Logout</button>}
+        {isLogin && (
+          <button onClick={handleLogout} className="btn btn-info">
+            Logout
+          </button>
+        )}
         {!isLogin && (
           <Link to={"/login"} className="btn btn-info">
             Login
