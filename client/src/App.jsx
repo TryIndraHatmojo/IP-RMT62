@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/index";
 import ProposalCreatePage from "./pages/ProposalCreatePage";
 import ProposalUpdatePage from "./pages/ProposalUpdatePage";
+import TopupPage from "./pages/TopupPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/create-proposal" element={<ProposalCreatePage />} />
               <Route path="/proposal/:id" element={<ProposalUpdatePage />} />
+              <Route path="/topup" element={<TopupPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
