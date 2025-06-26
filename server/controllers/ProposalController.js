@@ -62,24 +62,24 @@ class ProposalController {
           status: 400,
         };
       }
-      dataInput.longTermVision =
-        dataInput.longTermVision &&
-        ", visi jangka panjang usaha ini adalah " + dataInput.longTermVision;
-      dataInput.targetMarket =
-        dataInput.targetMarket &&
-        ", target pasar yang ingin dijangkau adalah " + dataInput.targetMarket;
-      dataInput.productUniqueness =
-        dataInput.productUniqueness &&
-        ", keunikan produk atau layanan yang ditawarkan adalah " +
-          dataInput.productUniqueness;
-      dataInput.mainCompetitors =
-        dataInput.mainCompetitors &&
-        ", pesaing utama dalam industri ini adalah " +
-          dataInput.mainCompetitors;
-      dataInput.marketingPlan =
-        dataInput.marketingPlan &&
-        ", rencana pemasaran yang akan diterapkan adalah " +
-          dataInput.marketingPlan;
+      dataInput.longTermVision = dataInput.longTermVision
+        ? ", visi jangka panjang usaha ini adalah " + dataInput.longTermVision
+        : "";
+      dataInput.targetMarket = dataInput.targetMarket
+        ? ", target pasar yang ingin dijangkau adalah " + dataInput.targetMarket
+        : "";
+      dataInput.productUniqueness = dataInput.productUniqueness
+        ? ", keunikan produk atau layanan yang ditawarkan adalah " +
+          dataInput.productUniqueness
+        : "";
+      dataInput.mainCompetitors = dataInput.mainCompetitors
+        ? ", pesaing utama dalam industri ini adalah " +
+          dataInput.mainCompetitors
+        : "";
+      dataInput.marketingPlan = dataInput.marketingPlan
+        ? ", rencana pemasaran yang akan diterapkan adalah " +
+          dataInput.marketingPlan
+        : "";
 
       let input =
         "Buatkan proposal bisnis secara realistis dan detail di dalam bidang " +
@@ -104,13 +104,14 @@ class ProposalController {
         "- Modal & Alokasinya\n" +
         "- SWOT\n" +
         "- Rencana 3, 6, 12, dan 36 bulan ke depan\n" +
-        "buat output dalam format JSON dengan struktur:{\n" +
+        "- Jangan menggunakan tabel\n" +
+        "buat output dalam format JSON dengan struktur: {\n" +
         '"title": "Nama Usaha",\n' +
         '"output": "output dari AI dengan format markdown"\n' +
-        "} jangan sertakan informasi lain selain JSON murni tanpa pembungkus apa pun";
+        "}\n hapus pembungkus ```json dan ``` hapus juga ```markdown dan ```';";
 
       const response = await client.responses.create({
-        model: "gpt-4.1-nano",
+        model: "gpt-4.1-mini",
         input,
       });
 
@@ -169,6 +170,18 @@ class ProposalController {
   static async update(req, res, next) {
     try {
       const { id } = req.params;
+      const {
+        businessInterestField,
+        capital,
+        location,
+        preference,
+        businessGoal,
+        longTermVision,
+        targetMarket,
+        productUniqueness,
+        mainCompetitors,
+        marketingPlan,
+      } = req.body;
       const proposal = await Proposal.findOne({
         where: { id, UserId: req.user.id },
         include: [PromptProposal],
@@ -187,7 +200,18 @@ class ProposalController {
       let response = await ProposalController.createPrompt(req.body);
       response = JSON.parse(response.replace("```json", "").replace("```", ""));
 
-      await promptProposal.update(req.body);
+      await promptProposal.update({
+        businessInterestField,
+        capital,
+        location,
+        preference,
+        businessGoal,
+        longTermVision,
+        targetMarket,
+        productUniqueness,
+        mainCompetitors,
+        marketingPlan,
+      });
 
       await proposal.update({
         title: response.title,

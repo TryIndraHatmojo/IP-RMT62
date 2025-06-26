@@ -16,7 +16,7 @@ export default function CardLandingPage({ sellPoint, proposal }) {
         {proposal && (
           <>
             <h2 className="card-title ">{proposal.title}</h2>
-            <Markdown markdownText={proposal.aiOutput.slice(0, 100) + "..."} />
+            {/* <Markdown markdownText={proposal.aiOutput.slice(0, 100) + "..."} /> */}
             <div className="flex w-full flex-col lg:flex-row flex-wrap justify-center items-center gap-4 mt-4">
               <Link
                 className="btn btn-info btn-soft w-36"

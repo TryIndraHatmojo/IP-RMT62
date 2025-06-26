@@ -8,6 +8,8 @@ import PublicLayout from "./layouts/PublicLayout";
 import DashboardPage from "./pages/DashboardPage";
 import { Provider } from "react-redux";
 import { store } from "./store/index";
+import ProposalCreatePage from "./pages/ProposalCreatePage";
+import ProposalUpdatePage from "./pages/ProposalUpdatePage";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
             </Route>
             <Route element={<AuthLayout />}>
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/create-proposal" element={<ProposalCreatePage />} />
+              <Route path="/proposal/:id" element={<ProposalUpdatePage />} />
             </Route>
           </Routes>
         </BrowserRouter>
