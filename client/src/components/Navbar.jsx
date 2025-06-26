@@ -44,9 +44,15 @@ export default function Navbar({ isLogin }) {
         )}
       </div>
       <div className="navbar-center">
-        <Link to={"/"} className="btn btn-ghost text-xl">
-          ModalNekat
-        </Link>
+        {isLogin ? (
+          <Link to={"/dashboard"} className="btn btn-ghost text-xl">
+            ModalNekat
+          </Link>
+        ) : (
+          <Link to={"/"} className="btn btn-ghost text-xl">
+            ModalNekat
+          </Link>
+        )}
       </div>
       <div className="navbar-end">
         {isLogin && <button className="btn btn-info">Logout</button>}
