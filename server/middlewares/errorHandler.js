@@ -21,6 +21,8 @@ function errorHandler(error, req, res, next) {
     res.status(403).json({
       message: "Unauthorized - You don't have permission to do this action",
     });
+  } else if (error.code === "ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING_FLAG") {
+    res.status(400).json({ message: "Dynamic import callback missing flag" });
   } else {
     res.status(500).json({ message: "Internal Server Error" });
   }

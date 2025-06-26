@@ -72,11 +72,11 @@ export default function LandingPage() {
   return (
     <>
       <div className="hero mt-15 ms-5 me-5">
-        <div className="hero-content flex-col lg:flex-row">
+        <div className=" bg-base-200 hero-content flex-col lg:flex-row rounded-lg shadow-2xl">
           <img src={logo} className="max-w-sm rounded-lg shadow-2xl" />
-          <div>
+          <div className=" p-5">
             <h1 className="text-5xl font-bold">Your Business Planner App</h1>
-            <p className="py-5">
+            <p className="py-5 ">
               AI Business Planner is an intelligent platform that helps users
               instantly generate professional business proposals using AI. Just
               enter your business idea, and get a complete, structured proposal

@@ -2,7 +2,7 @@ import ReactMarkdown from "react-markdown";
 
 function Markdown({ markdownText }) {
   return (
-    <section className="p-4 space-y-3">
+    <section className="space-y-3">
       <ReactMarkdown
         components={{
           h1: ({ node, ...props }) => (
@@ -21,7 +21,7 @@ function Markdown({ markdownText }) {
             <li className="list-disc ml-6" {...props} />
           ),
           strong: ({ node, ...props }) => (
-            <strong className="font-bold text-gray-800" {...props} />
+            <strong className="font-bold text-gray-100" {...props} />
           ),
           em: ({ node, ...props }) => <em className="italic" {...props} />,
         }}

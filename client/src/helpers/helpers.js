@@ -8,6 +8,14 @@ export function formatRupiah(money) {
   }).format(money);
 }
 
+export function getToken() {
+  return localStorage.getItem("access_token");
+}
+
+export function getBearerToken() {
+  return `Bearer ${localStorage.getItem("access_token")}`;
+}
+
 export function getTokenPayload() {
   const base64Payload = localStorage.getItem("access_token").split(".")[1];
   let payload = atob(base64Payload);

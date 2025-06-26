@@ -55,24 +55,31 @@ class ProposalController {
 
   static async createPrompt(dataInput) {
     try {
-      dataInput.longTermVision =
-        dataInput.longTermVision &&
-        ", visi jangka panjang usaha ini adalah " + dataInput.longTermVision;
-      dataInput.targetMarket =
-        dataInput.targetMarket &&
-        ", target pasar yang ingin dijangkau adalah " + dataInput.targetMarket;
-      dataInput.productUniqueness =
-        dataInput.productUniqueness &&
-        ", keunikan produk atau layanan yang ditawarkan adalah " +
-          dataInput.productUniqueness;
-      dataInput.mainCompetitors =
-        dataInput.mainCompetitors &&
-        ", pesaing utama dalam industri ini adalah " +
-          dataInput.mainCompetitors;
-      dataInput.marketingPlan =
-        dataInput.marketingPlan &&
-        ", rencana pemasaran yang akan diterapkan adalah " +
-          dataInput.marketingPlan;
+      if (!dataInput.businessInterestField) {
+        throw {
+          name: "ValidationError",
+          message: "Bidang minat usaha tidak boleh kosong",
+          status: 400,
+        };
+      }
+      dataInput.longTermVision = dataInput.longTermVision
+        ? ", visi jangka panjang usaha ini adalah " + dataInput.longTermVision
+        : "";
+      dataInput.targetMarket = dataInput.targetMarket
+        ? ", target pasar yang ingin dijangkau adalah " + dataInput.targetMarket
+        : "";
+      dataInput.productUniqueness = dataInput.productUniqueness
+        ? ", keunikan produk atau layanan yang ditawarkan adalah " +
+          dataInput.productUniqueness
+        : "";
+      dataInput.mainCompetitors = dataInput.mainCompetitors
+        ? ", pesaing utama dalam industri ini adalah " +
+          dataInput.mainCompetitors
+        : "";
+      dataInput.marketingPlan = dataInput.marketingPlan
+        ? ", rencana pemasaran yang akan diterapkan adalah " +
+          dataInput.marketingPlan
+        : "";
 
       let input =
         "Buatkan proposal bisnis secara realistis dan detail di dalam bidang " +
@@ -97,13 +104,14 @@ class ProposalController {
         "- Modal & Alokasinya\n" +
         "- SWOT\n" +
         "- Rencana 3, 6, 12, dan 36 bulan ke depan\n" +
-        "buat output dalam format JSON dengan struktur:{\n" +
+        "- Jangan menggunakan tabel\n" +
+        "buat output dalam format JSON dengan struktur: {\n" +
         '"title": "Nama Usaha",\n' +
         '"output": "output dari AI dengan format markdown"\n' +
-        "} jangan sertakan informasi lain selain JSON murni tanpa pembungkus apa pun";
+        "}\n hapus pembungkus ```json dan ``` hapus juga ```markdown dan ```';";
 
       const response = await client.responses.create({
-        model: "gpt-4.1-nano",
+        model: "gpt-4.1-mini",
         input,
       });
 
@@ -114,16 +122,12 @@ class ProposalController {
   }
 
   static async findAll(req, res, next) {
-    try {
-      const proposals = await Proposal.findAll({
-        include: [PromptProposal],
-        where: { UserId: req.user.id },
-        order: [["createdAt", "DESC"]],
-      });
-      res.status(200).json(proposals);
-    } catch (err) {
-      next(err);
-    }
+    const proposals = await Proposal.findAll({
+      include: [PromptProposal],
+      where: { UserId: req.user.id },
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(proposals);
   }
 
   static async findOne(req, res, next) {
@@ -134,7 +138,11 @@ class ProposalController {
         include: [PromptProposal],
       });
       if (!proposal) {
-        return res.status(404).json({ message: "Proposal not found" });
+        throw {
+          name: "ErrorDataNotFound",
+          message: "Proposal not found",
+          status: 404,
+        };
       }
       res.status(200).json(proposal);
     } catch (err) {
@@ -148,7 +156,11 @@ class ProposalController {
         where: { id, UserId: req.user.id },
       });
       if (!deleted) {
-        return res.status(404).json({ message: "Proposal not found" });
+        throw {
+          name: "ErrorDataNotFound",
+          message: "Proposal not found",
+          status: 404,
+        };
       }
       res.status(200).json({ message: "Proposal deleted successfully" });
     } catch (err) {
@@ -158,12 +170,28 @@ class ProposalController {
   static async update(req, res, next) {
     try {
       const { id } = req.params;
+      const {
+        businessInterestField,
+        capital,
+        location,
+        preference,
+        businessGoal,
+        longTermVision,
+        targetMarket,
+        productUniqueness,
+        mainCompetitors,
+        marketingPlan,
+      } = req.body;
       const proposal = await Proposal.findOne({
         where: { id, UserId: req.user.id },
         include: [PromptProposal],
       });
       if (!proposal) {
-        return res.status(404).json({ message: "Proposal not found" });
+        throw {
+          name: "ErrorDataNotFound",
+          message: "Proposal not found",
+          status: 404,
+        };
       }
       const promptProposal = await PromptProposal.findByPk(
         proposal.PromptProposalId
@@ -172,7 +200,18 @@ class ProposalController {
       let response = await ProposalController.createPrompt(req.body);
       response = JSON.parse(response.replace("```json", "").replace("```", ""));
 
-      await promptProposal.update(req.body);
+      await promptProposal.update({
+        businessInterestField,
+        capital,
+        location,
+        preference,
+        businessGoal,
+        longTermVision,
+        targetMarket,
+        productUniqueness,
+        mainCompetitors,
+        marketingPlan,
+      });
 
       await proposal.update({
         title: response.title,

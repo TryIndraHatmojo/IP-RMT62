@@ -6,12 +6,14 @@ const client = new OAuth2Client();
 class LoginController {
   static async googleLogin(req, res, next) {
     try {
+      if (!req.body.token) {
+        throw { name: "ValidationError", message: "Google token is required" };
+      }
       const ticket = await client.verifyIdToken({
         idToken: req.body.token,
         audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
       });
       const payload = ticket.getPayload();
-      console.log("🚀 ~ LoginController ~ googleLogin ~ payload:", payload);
 
       const { email, name } = payload;
       let user = await User.findOne({ where: { email } });
