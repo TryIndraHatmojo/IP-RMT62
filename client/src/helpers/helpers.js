@@ -23,5 +23,5 @@ export function getTokenPayload() {
 }
 
 export const apiModalNekat = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://apimodalnekat.tryindrahatmojo.com",
 });
